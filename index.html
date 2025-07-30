@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLN</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #87CEEB;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .animation-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            transform: rotate(-45deg);
+            animation: floatUpHeart 10s infinite ease-in;
+            opacity: 0;
+            will-change: transform, opacity;
+            transition: background-color 0.5s ease;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: inherit;
+        }
+
+        .heart::before { top: -10px; left: 0; }
+        .heart::after { top: 0; left: 10px; }
+
+        @keyframes floatUpHeart {
+            0% { transform: translateY(100vh) rotate(-45deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) rotate(-45deg); opacity: 0; }
+        }
+
+        .heart.red-heart {
+            background-color: #ff0000 !important;
+        }
+
+        .container {
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            margin: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            display: none;
+        }
+
+        .question-box {
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            animation: pulseQuestion 2s infinite ease-in-out;
+        }
+
+        .question-box p {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #4a0050;
+            line-height: 1.5;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .question-box p:hover {
+            color: #7b0080;
+        }
+
+        @keyframes pulseQuestion {
+            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); }
+            50% { transform: scale(1.02); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); }
+            100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); }
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            position: relative;
+            min-height: 70px;
+        }
+
+        .button-group button {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, border-radius 0.3s ease, box-shadow 0.3s ease;
+            min-width: 120px;
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #yesBtn {
+            background-color: #28a745;
+            border-top-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            background-image: linear-gradient(45deg, #28a745 0%, #34eb61 100%);
+            border: 2px solid transparent;
+        }
+        #yesBtn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            border-top-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            background-image: linear-gradient(45deg, #218838 0%, #2ecc71 100%);
+            border-color: #fff;
+        }
+        #yesBtn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.5s ease;
+            transform: skewX(-20deg);
+        }
+
+        #yesBtn:hover::before {
+            left: 100%;
+        }
+
+        #noBtn {
+            background-color: #dc3545;
+            border-top-right-radius: 30px;
+            border-bottom-left-radius: 30px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(calc(120%));
+            transition: background-color 0.3s ease, top 0.1s ease-out, left 0.1s ease-out, transform 0.1s ease-out, border-radius 0.3s ease;
+        }
+
+        #noBtn:hover {
+            background-color: #c82333;
+            border-top-right-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #007bff;
+            min-height: 25px;
+            animation: fadeInScale 0.7s ease-out forwards;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .question-box p {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 15px;
+                min-height: 120px;
+            }
+
+            #yesBtn {
+                position: relative;
+                margin-bottom: 15px;
+                border-top-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+            }
+
+            #noBtn {
+                position: relative;
+                left: auto;
+                transform: translateX(0%);
+                border-top-right-radius: 15px;
+                border-bottom-left-radius: 15px;
+            }
+
+            .button-group button {
+                padding: 12px 20px;
+                font-size: 1em;
+                width: 80%;
+                max-width: 250px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            .question-box p {
+                font-size: 1.5em;
+            }
+            .button-group button {
+                font-size: 0.9em;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animation-container"></div>
+
+    <div class="container">
+        <h1></h1> 
+        <div class="question-box">
+            <p id="questionText">Do you love me?</p>
+        </div>
+        <div class="button-group">
+            <button id="yesBtn" onclick="handleYes()">Yes</button>
+            <button id="noBtn" onmouseover="moveNoButton()" onclick="handleNo()">No</button>
+        </div>
+        <div id="resultDisplay" class="result"></div>
+    </div>
+
+    <script>
+        const noButton = document.getElementById('noBtn');
+        const yesButton = document.getElementById('yesBtn');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const container = document.querySelector('.container');
+        const animationContainer = document.querySelector('.animation-container');
+
+        const heartColors = ['#FFC0CB', '#FFD700', '#ADD8E6', '#90EE90', '#FFA07A', '#EE82EE'];
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            const randomColor = heartColors[Math.floor(Math.random() * heartColors.length)];
+            heart.style.backgroundColor = randomColor;
+
+            animationContainer.appendChild(heart);
+
+            heart.style.left = `${Math.random() * 100}vw`;
+            heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
+            heart.style.animationDelay = `${Math.random() * 2}s`;
+
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+            return heart;
+        }
+
+        let heartInterval;
+
+        function startAnimations() {
+            animationContainer.innerHTML = '';
+            
+            heartInterval = setInterval(() => {
+                createHeart();
+            }, 300);
+        }
+
+        function changeHeartColorToRed() {
+            const allHearts = document.querySelectorAll('.heart');
+            allHearts.forEach(heart => {
+                heart.style.backgroundColor = '#ff0000';
+                heart.classList.add('red-heart');
+            });
+
+            clearInterval(heartInterval);
+            heartInterval = setInterval(() => {
+                const heart = createHeart();
+                heart.style.backgroundColor = '#ff0000';
+                heart.classList.add('red-heart');
+            }, 300);
+        }
+
+        function handleYes() {
+            resultDisplay.textContent = 'Хайртайдаа♥️'; 
+            resultDisplay.style.color = '#28a745';
+            
+            resultDisplay.classList.remove('result-animate');
+            void resultDisplay.offsetWidth;
+            resultDisplay.classList.add('result-animate');
+            
+            changeHeartColorToRed();
+            disableButtons();
+
+            setTimeout(() => {
+                sendSeparateMessage();
+            }, 3000);
+        }
+
+        function handleNo() {
+            resultDisplay.textContent = 'Oh, no... But I still like you!';
+            resultDisplay.style.color = '#dc3545';
+            resultDisplay.classList.remove('result-animate'); 
+
+            disableButtons();
+            noButton.style.pointerEvents = 'none';
+        }
+
+        function moveNoButton() {
+            const containerRect = container.getBoundingClientRect();
+            const buttonRect = noButton.getBoundingClientRect();
+
+            const overlapBuffer = 150; 
+
+            let newX, newY;
+            let attempts = 0;
+            const maxAttempts = 100;
+
+            const yesRect = yesButton.getBoundingClientRect();
+            const yesLeftInContainer = yesRect.left - containerRect.left;
+            const yesTopInContainer = yesRect.top - containerRect.top;
+
+            do {
+                newX = Math.random() * (containerRect.width - buttonRect.width);
+                newY = Math.random() * (containerRect.height - buttonRect.height);
+                attempts++;
+
+                const isOverlappingYes = (
+                    newX < yesLeftInContainer + yesRect.width + overlapBuffer &&
+                    newX + buttonRect.width + overlapBuffer > yesLeftInContainer &&
+                    newY < yesTopInContainer + yesRect.height + overlapBuffer &&
+                    newY + buttonRect.height + overlapBuffer > yesTopInContainer
+                );
+
+                if (!isOverlappingYes) {
+                    newX = Math.max(0, Math.min(newX, containerRect.width - buttonRect.width));
+                    newY = Math.max(0, Math.min(newY, containerRect.height - buttonRect.height));
+                    break;
+                }
+
+            } while (attempts < maxAttempts);
+
+            noButton.style.left = `${newX}px`;
+            noButton.style.top = `${newY}px`;
+            noButton.style.transform = 'translate(0, 0)'; 
+        }
+
+        function disableButtons() {
+            yesButton.disabled = true;
+            noButton.disabled = true;
+            yesButton.style.opacity = '0.7';
+            noButton.style.opacity = '0.7';
+            noButton.style.pointerEvents = 'none';
+            noButton.onmouseover = null;
+        }
+
+        function sendSeparateMessage() {
+            alert("Хөөрхөн шүү"); 
+            console.log("Хөөрхөн шүү гэсэн мессеж илгээгдлээ.");
+        }
+
+        window.onload = function() {
+            resultDisplay.textContent = '';
+            yesButton.disabled = false;
+            noButton.disabled = false;
+            yesButton.style.opacity = '1';
+            noButton.style.opacity = '1';
+            noButton.style.pointerEvents = 'auto';
+            
+            noButton.style.position = 'absolute';
+            noButton.style.left = '50%';
+            noButton.style.top = 'auto';
+            noButton.style.transform = 'translateX(calc(120%))';
+
+            noButton.onmouseover = moveNoButton;
+            startAnimations();
+        };
+    </script>
+</body>
+</html>
